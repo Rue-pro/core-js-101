@@ -199,8 +199,30 @@ function extractEmails(str) {
  *             '└──────────┘\n'
  *
  */
-function getRectangleString(/* width, height */) {
-  throw new Error('Not implemented');
+function getRectangleString(width, height) {
+  let result = '';
+  for (let h = 0; h < height; h += 1) {
+    let line = '';
+    for (let w = 0; w < width - 2; w += 1) {
+      if (h === 0 || h === height - 1) {
+        line += '─';
+      } else {
+        line += ' ';
+      }
+    }
+    switch (h) {
+      case 0:
+        line = `┌${line}┐\n`;
+        break;
+      case height - 1:
+        line = `└${line}┘\n`;
+        break;
+      default:
+        line = `│${line}│\n`;
+    }
+    result += line;
+  }
+  return result;
 }
 
 /**
@@ -263,8 +285,11 @@ function encodeToRot13(str) {
  *   isString('test') => true
  *   isString(new String('test')) => true
  */
-function isString(/* value */) {
-  throw new Error('Not implemented');
+function isString(value) {
+  if (value === null || value === undefined) {
+    return false;
+  }
+  return Object.getPrototypeOf(value) === String.prototype;
 }
 
 /**
@@ -291,8 +316,25 @@ function isString(/* value */) {
  *   'Q♠' => 50
  *   'K♠' => 51
  */
-function getCardId(/* value */) {
-  throw new Error('Not implemented');
+function getCardId(value) {
+  const cardsCount = 13;
+  const symbolToFactor = ['♣', '♦', '♥', '♠'];
+  const typeToIndex = {
+    A: 0,
+    J: 10,
+    Q: 11,
+    K: 12,
+  };
+
+  const symbol = value.charAt(value.length - 1);
+  const factor = symbolToFactor.indexOf(symbol) * cardsCount;
+
+  const number = parseInt(value, 10);
+  if (Object.is(NaN, number)) {
+    return typeToIndex[value.charAt(0)] + factor;
+  }
+
+  return number + factor - 1;
 }
 
 module.exports = {
